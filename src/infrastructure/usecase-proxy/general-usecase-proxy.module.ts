@@ -1,0 +1,59 @@
+import { DynamicModule, Module } from '@nestjs/common';
+import { LoggerModule } from '../logger/logger.module';
+import { RepositoriesModule } from '../repositories/repositories.module';
+import {
+  GET_PENSION_POTS_USECASE_PROXY,
+  PENSION_POTS_USECASE_PROXY,
+} from './proxy/pension-pots/pension-pots.usecase.proxy';
+import {
+  CALCULATE_PENSION_POT_BALANCE_USECASE_PROXY,
+  FILTER_POT_BY_AMOUNT_USECASE_PROXY,
+  FILTER_POT_BY_EMPLOYER_USECASE_PROXY,
+  FILTER_POT_BY_ID_USECASE_PROXY,
+  FILTER_POT_BY_NAME_USECASE_PROXY,
+  FILTER_POT_BY_PENSION_PROVIDER_USECASE_PROXY,
+  GET_POT_USECASE_PROXY,
+  POT_USECASE_PROXY,
+} from './proxy/pots/pot.usecase.proxy';
+import {
+  FILTER_SEARCH_PENSION_USECASE_PROXY,
+  GET_SEARCH_PENSION_USECASE_PROXY,
+  SEARCH_PENSION_USECASE_PROXY,
+} from './proxy/search-pension/search-pension.usecase.proxy';
+import { SupabaseModule } from '../config/supabase/supabase.module';
+
+@Module({
+  imports: [LoggerModule, RepositoriesModule, SupabaseModule],
+})
+export class GeneralUsecaseProxyModule {
+  static register(): DynamicModule {
+    return {
+      module: GeneralUsecaseProxyModule,
+      providers: [
+        GET_PENSION_POTS_USECASE_PROXY,
+        CALCULATE_PENSION_POT_BALANCE_USECASE_PROXY,
+        FILTER_POT_BY_AMOUNT_USECASE_PROXY,
+        FILTER_POT_BY_EMPLOYER_USECASE_PROXY,
+        FILTER_POT_BY_PENSION_PROVIDER_USECASE_PROXY,
+        FILTER_POT_BY_ID_USECASE_PROXY,
+        FILTER_POT_BY_NAME_USECASE_PROXY,
+        GET_POT_USECASE_PROXY,
+        FILTER_SEARCH_PENSION_USECASE_PROXY,
+        GET_SEARCH_PENSION_USECASE_PROXY,
+      ],
+      exports: [
+        PENSION_POTS_USECASE_PROXY.GET_PENSION_POTS_USECASE_PROXY,
+        SEARCH_PENSION_USECASE_PROXY.FILTER_SEARCH_PENSION_USECASE_PROXY,
+        SEARCH_PENSION_USECASE_PROXY.GET_SEARCH_PENSION_USECASE_PROXY,
+
+        POT_USECASE_PROXY.CALCULATE_PENSION_POT_BALANCE_USECASE_PROXY,
+        POT_USECASE_PROXY.FILTER_POT_BY_AMOUNT_USECASE_PROXY,
+        POT_USECASE_PROXY.FILTER_POT_BY_EMPLOYER_USECASE_PROXY,
+        POT_USECASE_PROXY.FILTER_POT_BY_ID_USECASE_PROXY,
+        POT_USECASE_PROXY.FILTER_POT_BY_NAME_USECASE_PROXY,
+        POT_USECASE_PROXY.FILTER_POT_BY_PENSION_PROVIDER_USECASE_PROXY,
+        POT_USECASE_PROXY.GET_POT_USECASE_PROXY,
+      ],
+    };
+  }
+}
