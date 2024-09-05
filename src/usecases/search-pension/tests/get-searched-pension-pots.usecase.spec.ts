@@ -1,7 +1,7 @@
 import { GetSearchedPensionPotsUseCase } from '../get-searched-pension-pots.usecase';
 import { mockSearchedPensionRepository } from '../../../infrastructure/common/tests/mock/repository.mock';
 import { mockLogger } from '../../../infrastructure/common/tests/mock/logger.mock';
-import { SearchedPensionModel } from '../../../domain/models/searched-pension.model';
+import { PensionPotModel } from '../../../domain/models/pension-pot.model';
 
 describe('GetSearchedPensionPotsUseCase', () => {
   let getSearchedPensionPotsUseCase: GetSearchedPensionPotsUseCase;
@@ -14,33 +14,43 @@ describe('GetSearchedPensionPotsUseCase', () => {
   });
 
   it('should return all searched pension pots', async () => {
-    const mockSearchedPensions: SearchedPensionModel[] = [
+    const mockSearchedPensions: PensionPotModel[] = [
       {
-        id: '1',
-        potName: 'Searched Pot 1',
-        amount: 5000,
-        annualInterestRate: 3,
-        defaultAnnualInterestRate: 3,
-        employer: 'Employer 1',
-        lastUpdatedAt: '2024-01-01T00:00:00.000Z',
-        pensionProvider: { name: 'Provider 1', value: 'PROVIDER_1' },
-        status: 'FOUND',
-        foundOn: '2024-01-01T00:00:00.000Z',
-        isDraft: false,
-        previousName: null,
-        previousAddress: 'Some Address',
-        policyNumber: '',
-        annualFee: 0,
+        annualInterestRate: 0,
+        defaultAnnualInterestRate: 0,
+        isWorkplacePension: false,
+        monthlyPayment: 0,
+        id: '3a1a354e-c1a5-4d4c-aeff-df3b3fe4d499',
+        potName: 'Pension',
+        pensionProvider: {
+          name: null,
+          value: null,
+        },
+        amount: 40000,
+        employer: 'Telegraph',
+        lastUpdatedAt: '2024-06-11T10:52:33.819',
+        searchedPension: {
+          id: '3a1a354e-c1a5-4d4c-aeff-df3b3fe4d499',
+          pension_pot_id: '4b6004d2-58f6-45c6-9a27-045b9571ae3e',
+          lastUpdatedAt: '2024-06-11T10:52:33.819',
+          policyNumber: null,
+          annualFee: null,
+          status: 'FOUND',
+          previousName: null,
+          previousAddress: '12 Something St',
+          foundOn: '2024-08-11T10:52:33.819',
+          isDraft: false,
+        },
       },
     ];
 
-    mockSearchedPensionRepository.findAll.mockResolvedValue(
+    mockSearchedPensionRepository.findSearchPension.mockResolvedValue(
       mockSearchedPensions,
     );
 
     const result = await getSearchedPensionPotsUseCase.getSearchedPensionPots();
 
-    expect(mockSearchedPensionRepository.findAll).toHaveBeenCalled();
+    expect(mockSearchedPensionRepository.findSearchPension).toHaveBeenCalled();
     expect(result.data).toEqual(mockSearchedPensions);
   });
 });

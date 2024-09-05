@@ -1,16 +1,13 @@
 import { IPensionPotRepository } from '../../domain/repositories/pension-pot-repository.interface';
-import { ISearchedPensionRepository } from '../../domain/repositories/searched-pension-repository.interface';
 import { ILogger } from '../../domain/logger/logger.interface';
 import { IUseCaseResponse } from '../../domain/adapters/use-case-response.interface';
 import { PensionPotModel } from '../../domain/models/pension-pot.model';
-import { SearchedPensionModel } from '../../domain/models/searched-pension.model';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { GetPotsDto } from '../../infrastructure/common/dto/pot.dto';
 
 export class FilterPotUseCase {
   constructor(
     private readonly pensionPotRepository: IPensionPotRepository,
-    private readonly searchedPensionRepository: ISearchedPensionRepository,
     private readonly logger: ILogger,
   ) {}
 
@@ -20,9 +17,9 @@ export class FilterPotUseCase {
    */
   async filterPots(
     filter?: GetPotsDto,
-  ): Promise<IUseCaseResponse<(PensionPotModel | SearchedPensionModel)[]>> {
+  ): Promise<IUseCaseResponse<PensionPotModel[]>> {
     try {
-      let pots: (PensionPotModel | SearchedPensionModel)[] = [];
+      let pots: PensionPotModel[] = [];
 
       const filterPromises = [];
 
@@ -62,67 +59,45 @@ export class FilterPotUseCase {
     }
   }
 
-  private async findPotByName(
-    name: string,
-  ): Promise<(PensionPotModel | SearchedPensionModel)[]> {
-    const [pensionPot, searchedPension] = await Promise.all([
-      this.pensionPotRepository.findByName(name),
-      this.searchedPensionRepository.findByName(name),
-    ]);
-    return pensionPot ? [pensionPot] : searchedPension ? [searchedPension] : [];
+  private async findPotByName(name: string): Promise<PensionPotModel[]> {
+    const pensionPot = await this.pensionPotRepository.findByName(name);
+    return pensionPot ? [pensionPot] : [];
   }
 
   private async filterPotsByEmployer(
     employer: string,
-  ): Promise<(PensionPotModel | SearchedPensionModel)[]> {
-    const [pensionPots, searchedPensions] = await Promise.all([
-      this.pensionPotRepository.findByEmployer(employer),
-      this.searchedPensionRepository.findByEmployer(employer),
-    ]);
-
-    return [...pensionPots, ...searchedPensions];
+  ): Promise<PensionPotModel[]> {
+    const pots = await this.pensionPotRepository.findByEmployer(employer);
+    return [...pots];
   }
 
   private async filterPotsByPensionProvider(
     provider: string,
-  ): Promise<(PensionPotModel | SearchedPensionModel)[]> {
-    const [pensionPots, searchedPensions] = await Promise.all([
-      this.pensionPotRepository.findByProvider(provider),
-      this.searchedPensionRepository.findByProvider(provider),
-    ]);
-    return [...pensionPots, ...searchedPensions];
+  ): Promise<PensionPotModel[]> {
+    const pensionPots =
+      await this.pensionPotRepository.findByProvider(provider);
+    return [...pensionPots];
   }
 
   private async filterPotByAmount(
     amount: number,
     direction: 'less' | 'greater',
-  ): Promise<(PensionPotModel | SearchedPensionModel)[]> {
-    const [pensionPots, searchedPensions] = await Promise.all([
+  ): Promise<PensionPotModel[]> {
+    const pensionPots =
       direction === 'greater'
-        ? this.pensionPotRepository.findByAmountOver(amount)
-        : this.pensionPotRepository.findByAmountUnder(amount),
-      direction === 'greater'
-        ? this.searchedPensionRepository.findByAmountOver(amount)
-        : this.searchedPensionRepository.findByAmountUnder(amount),
-    ]);
-    return [...pensionPots, ...searchedPensions];
+        ? await this.pensionPotRepository.findByAmountOver(amount)
+        : await this.pensionPotRepository.findByAmountUnder(amount);
+    return [...pensionPots];
   }
 
-  private async getAllPots(): Promise<
-    (PensionPotModel | SearchedPensionModel)[]
-  > {
-    const [pensionPots, searchedPensions] = await Promise.all([
-      this.pensionPotRepository.findAll(),
-      this.searchedPensionRepository.findAll(),
-    ]);
-    return [...pensionPots, ...searchedPensions];
+  private async getAllPots(): Promise<PensionPotModel[]> {
+    return this.pensionPotRepository.findAll();
   }
 
   private combineFilterResults(
-    results: (PensionPotModel | SearchedPensionModel)[][],
-  ): (PensionPotModel | SearchedPensionModel)[] {
-    const potMap: Map<string, PensionPotModel | SearchedPensionModel> =
-      new Map();
+    results: PensionPotModel[][],
+  ): PensionPotModel[] {
+    const potMap: Map<string, PensionPotModel> = new Map();
 
     results.forEach((resultSet) => {
       resultSet.forEach((pot) => {

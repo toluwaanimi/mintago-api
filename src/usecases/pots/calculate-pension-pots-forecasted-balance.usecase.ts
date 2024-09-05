@@ -15,7 +15,7 @@ export class CalculatePensionPotsForecastedBalanceUseCase {
   async getPensionPotsForecastedBalance(years: number) {
     try {
       // Fetch all pension pots
-      const pots = await this.pensionPotRepository.findAll();
+      const pots = await this.pensionPotRepository.findPensionPots();
 
       // Calculate forecasted balance for each pot
       const forecastedPots = pots.map((pot) => {

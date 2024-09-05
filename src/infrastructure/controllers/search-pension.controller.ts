@@ -3,6 +3,7 @@ import { SEARCH_PENSION_USECASE_PROXY } from '../usecase-proxy/proxy/search-pens
 import { UseCaseProxy } from '../usecase-proxy/usecase-proxy';
 import { FilterSearchPensionByStatusUsecase } from '../../usecases/search-pension/filter-search-pension-by-status.usecase';
 import { GetSearchedPensionPotsUseCase } from '../../usecases/search-pension/get-searched-pension-pots.usecase';
+import { HttpResponse } from '../common/helpers/response.helper';
 
 @Controller('pension-pots/search')
 export class SearchPensionController {
@@ -15,15 +16,23 @@ export class SearchPensionController {
 
   @Get('')
   async getSearchPension() {
-    return await this.getSearchPensionUseCaseProxy
+    const response = await this.getSearchPensionUseCaseProxy
       .getInstance()
       .getSearchedPensionPots();
+    return HttpResponse.send(
+      'Searched pension pots retrieved successfully',
+      response,
+    );
   }
 
   @Get('status')
   async filterSearchPension() {
-    return await this.filterSearchPensionUseCaseProxy
+    const response = await this.filterSearchPensionUseCaseProxy
       .getInstance()
       .filterPensionPotByStatus();
+    return HttpResponse.send(
+      'Searched pension pots filtered successfully',
+      response,
+    );
   }
 }

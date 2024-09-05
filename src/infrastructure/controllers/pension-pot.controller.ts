@@ -2,6 +2,7 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import { PENSION_POTS_USECASE_PROXY } from '../usecase-proxy/proxy/pension-pots/pension-pots.usecase.proxy';
 import { UseCaseProxy } from '../usecase-proxy/usecase-proxy';
 import { GetPensionPotsUseCase } from '../../usecases/pension-pots/get-pension-pots.usecase';
+import { HttpResponse } from '../common/helpers/response.helper';
 
 @Controller('pensions')
 export class PensionPotController {
@@ -12,6 +13,9 @@ export class PensionPotController {
 
   @Get('')
   async getPensionPots() {
-    return await this.getPensionPotsUseCaseProxy.getInstance().getPensionPots();
+    const response = await this.getPensionPotsUseCaseProxy
+      .getInstance()
+      .getPensionPots();
+    return HttpResponse.send('Pension pots retrieved successfully', response);
   }
 }

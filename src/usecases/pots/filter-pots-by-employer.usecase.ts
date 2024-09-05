@@ -1,12 +1,10 @@
 import { IPensionPotRepository } from '../../domain/repositories/pension-pot-repository.interface';
-import { ISearchedPensionRepository } from '../../domain/repositories/searched-pension-repository.interface';
 import { ILogger } from '../../domain/logger/logger.interface';
 import { NotFoundException } from '@nestjs/common';
 
 export class FilterPotsByEmployerUseCase {
   constructor(
     private readonly pensionPotRepository: IPensionPotRepository,
-    private readonly searchedPensionRepository: ISearchedPensionRepository,
     private readonly logger: ILogger,
   ) {}
 
@@ -25,16 +23,8 @@ export class FilterPotsByEmployerUseCase {
   }
 
   private async filterPensionPotByEmployer(employer: string) {
-    const [pensionPot, searchedPension] = await Promise.all([
-      this.pensionPotRepository.findByEmployer(employer),
-      this.searchedPensionRepository.findByEmployer(employer),
-    ]);
-
+    const pensionPot = await this.pensionPotRepository.findByEmployer(employer);
     const validPensionPot = Array.isArray(pensionPot) ? pensionPot : [];
-    const validSearchedPension = Array.isArray(searchedPension)
-      ? searchedPension
-      : [];
-
-    return [...validPensionPot, ...validSearchedPension];
+    return [...validPensionPot];
   }
 }

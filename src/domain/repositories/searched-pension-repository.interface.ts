@@ -1,12 +1,13 @@
-import { SearchedPensionModel } from '../models/searched-pension.model';
 import { IBaseRepository } from './base-repository.interface';
+import { PensionPotModel } from '../models/pension-pot.model';
 
 export interface ISearchedPensionRepository
-  extends IBaseRepository<SearchedPensionModel> {
-  findByEmployer(employer: string): Promise<SearchedPensionModel[]>;
-  findByProvider(provider: string): Promise<SearchedPensionModel[]>;
-  findByStatus(status: string): Promise<SearchedPensionModel[]>;
-  findByName(name: string): Promise<SearchedPensionModel | null>;
-  findByAmountOver(amount: number): Promise<SearchedPensionModel[]>;
-  findByAmountUnder(amount: number): Promise<SearchedPensionModel[]>;
+  extends IBaseRepository<PensionPotModel> {
+  findSearchPension(): Promise<PensionPotModel[]>;
+  findByEmployer(employer: string): Promise<PensionPotModel[]>;
+  findByProvider(provider: string): Promise<PensionPotModel[]>;
+  findByStatus(status: string): Promise<PensionPotModel[]>;
+  findByName(name: string): Promise<PensionPotModel | null>;
+  findByAmountOver(amount: number): Promise<PensionPotModel[]>;
+  findByAmountUnder(amount: number): Promise<PensionPotModel[]>;
 }

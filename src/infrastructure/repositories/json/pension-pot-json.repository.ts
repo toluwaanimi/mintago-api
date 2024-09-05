@@ -3,6 +3,7 @@ import { BaseJsonRepository } from './base-json.repository';
 import { PensionPotModel } from '../../../domain/models/pension-pot.model';
 import { IPensionPotRepository } from '../../../domain/repositories/pension-pot-repository.interface';
 import * as testData from '../../common/data/pots-records';
+import { linkPotsToSearchedPensions } from '../../common/data/pots-records';
 
 @Injectable()
 export class PensionPotJsonRepository
@@ -10,7 +11,16 @@ export class PensionPotJsonRepository
   implements IPensionPotRepository
 {
   constructor() {
-    super(testData.defaultPots.pensionPots);
+    super(
+      linkPotsToSearchedPensions(
+        testData.defaultPots.pensionPots,
+        testData.defaultPots.searchedPensions,
+      ),
+    );
+  }
+
+  findPensionPots(): Promise<PensionPotModel[]> {
+    return Promise.resolve(this.items.filter((pot) => !pot.searchedPension));
   }
 
   findByEmployer(employer: string): Promise<PensionPotModel[]> {

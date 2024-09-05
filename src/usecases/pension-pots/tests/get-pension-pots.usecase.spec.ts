@@ -45,16 +45,16 @@ describe('GetPensionPotsUseCase', () => {
         },
       },
     ];
-    mockPensionPotRepository.findAll.mockResolvedValue(mockPensionPots);
+    mockPensionPotRepository.findPensionPots.mockResolvedValue(mockPensionPots);
 
     const result = await getPensionPotsUseCase.getPensionPots();
 
-    expect(mockPensionPotRepository.findAll).toHaveBeenCalled();
+    expect(mockPensionPotRepository.findPensionPots).toHaveBeenCalled();
     expect(result.data).toEqual(mockPensionPots);
   });
 
   it('should return an empty array if no pension pots are found', async () => {
-    mockPensionPotRepository.findAll.mockResolvedValue([]);
+    mockPensionPotRepository.findPensionPots.mockResolvedValue([]);
 
     const result = await getPensionPotsUseCase.getPensionPots();
 

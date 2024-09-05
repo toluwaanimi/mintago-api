@@ -11,7 +11,7 @@ export class GetSearchedPensionPotsUseCase {
    * Get all searched pension pots
    */
   async getSearchedPensionPots() {
-    const pots = await this.searchedPensionRepository.findAll();
+    const pots = await this.searchedPensionRepository.findSearchPension();
     return {
       data: pots,
     };

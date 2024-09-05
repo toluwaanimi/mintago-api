@@ -1,3 +1,6 @@
+import { PensionPotModel } from '../../../domain/models/pension-pot.model';
+import { SearchedPensionModel } from '../../../domain/models/searched-pension.model';
+
 export const defaultPots = {
   pensionPots: [
     {
@@ -105,16 +108,9 @@ export const defaultPots = {
       monthlyPayment: 200,
       isWorkplacePension: false,
     },
-  ],
-  searchedPensions: [
     {
       id: '0a4c2ed0-3b0c-4606-817e-e6f8d14dbfd2',
       potName: 'Searched Pension',
-      policyNumber: null,
-      annualFee: null,
-      status: 'TO_HUNT',
-      previousName: null,
-      previousAddress: '12 Something St',
       annualInterestRate: 0.02,
       defaultAnnualInterestRate: 0.02,
       pensionProvider: {
@@ -123,19 +119,13 @@ export const defaultPots = {
       },
       amount: 0,
       employer: 'Homebase',
-      foundOn: '2020-06-11T10:52:33.819Z',
       lastUpdatedAt: '2022-05-21T17:32:03.376Z',
       monthlyPayment: 0,
-      isDraft: true,
+      isWorkplacePension: false,
     },
     {
       id: '4b6004d2-58f6-45c6-9a27-045b9571ae3e',
       potName: 'Pension',
-      policyNumber: null,
-      annualFee: null,
-      status: 'FOUND',
-      previousName: null,
-      previousAddress: '12 Something St',
       annualInterestRate: 0.02,
       defaultAnnualInterestRate: 0.02,
       pensionProvider: {
@@ -144,10 +134,77 @@ export const defaultPots = {
       },
       amount: 40000,
       employer: 'Telegraph',
-      foundOn: '2024-08-11T10:52:33.819Z',
       lastUpdatedAt: '2024-06-11T10:52:33.819Z',
       monthlyPayment: 0,
+      isWorkplacePension: false,
+    },
+  ],
+  searchedPensions: [
+    {
+      id: '9f0b9d90-6a8e-4c23-b784-4bce4a5c3d7f',
+      pension_pot_id: '0a4c2ed0-3b0c-4606-817e-e6f8d14dbfd2',
+      policyNumber: null,
+      annualFee: null,
+      status: 'TO_HUNT',
+      previousName: null,
+      previousAddress: '12 Something St',
+      foundOn: '2020-06-11T10:52:33.819Z',
+      lastUpdatedAt: '2024-06-11T10:52:33.819Z',
+      isDraft: true,
+    },
+    {
+      id: '3a1a354e-c1a5-4d4c-aeff-df3b3fe4d499',
+      pension_pot_id: '4b6004d2-58f6-45c6-9a27-045b9571ae3e',
+      policyNumber: null,
+      annualFee: null,
+      status: 'FOUND',
+      previousName: null,
+      previousAddress: '12 Something St',
+      foundOn: '2024-08-11T10:52:33.819Z',
+      lastUpdatedAt: '2024-06-11T10:52:33.819Z',
       isDraft: false,
     },
   ],
 };
+
+export function linkSearchedPensions(
+  pensionPots: PensionPotModel[],
+  searchedPensions: SearchedPensionModel[],
+): PensionPotModel[] {
+  const searchedPensionMap = searchedPensions.reduce(
+    (acc, searchedPension) => {
+      acc[searchedPension.pension_pot_id] = searchedPension;
+      return acc;
+    },
+    {} as { [key: string]: SearchedPensionModel },
+  );
+
+  return pensionPots.map((pensionPot) => {
+    const relatedSearchedPension = searchedPensionMap[pensionPot.id];
+    return {
+      ...pensionPot,
+      searchedPension: relatedSearchedPension || undefined,
+    };
+  });
+}
+
+export function linkPotsToSearchedPensions(
+  pensionPots: PensionPotModel[],
+  searchedPensions: SearchedPensionModel[],
+): PensionPotModel[] {
+  const searchedPensionMap = searchedPensions.reduce(
+    (acc, searchedPension) => {
+      acc[searchedPension.pension_pot_id] = searchedPension;
+      return acc;
+    },
+    {} as { [key: string]: SearchedPensionModel },
+  );
+
+  return pensionPots.map((pensionPot) => {
+    const relatedSearchedPension = searchedPensionMap[pensionPot.id];
+    return {
+      ...pensionPot,
+      searchedPension: relatedSearchedPension || undefined,
+    };
+  });
+}

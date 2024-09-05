@@ -9,8 +9,6 @@ import { FindPotByNameUseCase } from '../../../../usecases/pots/find-pot-by-name
 import { GetPotsUseCase } from '../../../../usecases/pots/get-pots.usecase';
 import { PensionPotSupabaseRepository } from '../../../repositories/supabase/pension-pot-supabase.repository';
 import { PensionPotJsonRepository } from '../../../repositories/json/pension-pot-json.repository';
-import { SearchedPensionSupabaseRepository } from '../../../repositories/supabase/searched-pension-supabase.repository';
-import { SearchedPensionJsonRepository } from '../../../repositories/json/searched-pension-json.repository';
 
 export const POT_USECASE_PROXY = {
   CALCULATE_PENSION_POT_BALANCE_USECASE_PROXY:
@@ -42,127 +40,86 @@ export const CALCULATE_PENSION_POT_BALANCE_USECASE_PROXY = {
 };
 
 export const FILTER_POT_BY_AMOUNT_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.FILTER_POT_BY_AMOUNT_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
     new UseCaseProxy(
-      new FilterPotByAmountUseCase(
-        pensionPotRepository,
-        searchedPensionRepository,
-        loggerService,
-      ),
+      new FilterPotByAmountUseCase(pensionPotRepository, loggerService),
     ),
 };
 
 export const FILTER_POT_BY_EMPLOYER_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.FILTER_POT_BY_EMPLOYER_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
     new UseCaseProxy(
-      new FilterPotsByEmployerUseCase(
-        pensionPotRepository,
-        searchedPensionRepository,
-        loggerService,
-      ),
+      new FilterPotsByEmployerUseCase(pensionPotRepository, loggerService),
     ),
 };
 
 export const FILTER_POT_BY_PENSION_PROVIDER_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.FILTER_POT_BY_PENSION_PROVIDER_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
     new UseCaseProxy(
       new FilterPotsByPensionProviderUseCase(
         pensionPotRepository,
-        searchedPensionRepository,
         loggerService,
       ),
     ),
 };
 
 export const FILTER_POT_BY_ID_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.FILTER_POT_BY_ID_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
     new UseCaseProxy(
-      new FindPotByIdUseCase(
-        pensionPotRepository,
-        searchedPensionRepository,
-        loggerService,
-      ),
+      new FindPotByIdUseCase(pensionPotRepository, loggerService),
     ),
 };
 
 export const FILTER_POT_BY_NAME_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.FILTER_POT_BY_NAME_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
     new UseCaseProxy(
-      new FindPotByNameUseCase(
-        pensionPotRepository,
-        searchedPensionRepository,
-        loggerService,
-      ),
+      new FindPotByNameUseCase(pensionPotRepository, loggerService),
     ),
 };
 
 export const GET_POT_USECASE_PROXY = {
-  inject: ['PensionPotRepository', 'SearchedPensionRepository', LoggerService],
+  inject: ['PensionPotRepository', LoggerService],
   provide: POT_USECASE_PROXY.GET_POT_USECASE_PROXY,
   useFactory: (
     pensionPotRepository:
       | PensionPotSupabaseRepository
       | PensionPotJsonRepository,
-    searchedPensionRepository:
-      | SearchedPensionSupabaseRepository
-      | SearchedPensionJsonRepository,
     loggerService: LoggerService,
   ) =>
-    new UseCaseProxy(
-      new GetPotsUseCase(
-        pensionPotRepository,
-        searchedPensionRepository,
-        loggerService,
-      ),
-    ),
+    new UseCaseProxy(new GetPotsUseCase(pensionPotRepository, loggerService)),
 };

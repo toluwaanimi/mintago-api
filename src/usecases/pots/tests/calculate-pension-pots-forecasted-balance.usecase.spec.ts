@@ -43,14 +43,14 @@ describe('CalculatePensionPotsForecastedBalanceUseCase', () => {
       },
     ];
 
-    mockPensionPotRepository.findAll.mockResolvedValue(mockPensionPots);
+    mockPensionPotRepository.findPensionPots.mockResolvedValue(mockPensionPots);
 
     const result =
       await calculatePensionPotsForecastedBalanceUseCase.getPensionPotsForecastedBalance(
         10,
       );
 
-    expect(mockPensionPotRepository.findAll).toHaveBeenCalled();
+    expect(mockPensionPotRepository.findPensionPots).toHaveBeenCalled();
     expect(result.data).toHaveLength(2);
   });
 
@@ -70,7 +70,7 @@ describe('CalculatePensionPotsForecastedBalanceUseCase', () => {
       },
     ];
 
-    mockPensionPotRepository.findAll.mockResolvedValue(mockPensionPots);
+    mockPensionPotRepository.findPensionPots.mockResolvedValue(mockPensionPots);
 
     const result =
       await calculatePensionPotsForecastedBalanceUseCase.getPensionPotsForecastedBalance(
@@ -81,7 +81,7 @@ describe('CalculatePensionPotsForecastedBalanceUseCase', () => {
   });
 
   it('should throw BadRequestException if an error occurs during the calculation', async () => {
-    mockPensionPotRepository.findAll.mockRejectedValue(
+    mockPensionPotRepository.findPensionPots.mockRejectedValue(
       new Error('Database error'),
     );
 

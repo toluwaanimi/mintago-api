@@ -16,15 +16,15 @@ export class PensionPotSupabaseRepository
   private toModel(data: any): PensionPotModel {
     return {
       defaultAnnualInterestRate: data.defaultannualinterestrate,
-      isWorkplacePension: false,
+      isWorkplacePension: data.isworkplacepension,
       lastUpdatedAt: data.lastupdatedat,
       id: data.id,
       potName: data.potname,
       amount: data.amount,
       employer: data.employer,
       pensionProvider: data.pensionprovider,
-      annualInterestRate: data.annualInterestRate,
-      monthlyPayment: data.monthlyPayment,
+      annualInterestRate: data.annualinterestrate,
+      monthlyPayment: data.monthlypayment,
     };
   }
 
@@ -80,5 +80,13 @@ export class PensionPotSupabaseRepository
       .single();
     if (error) throw new Error(error.message);
     return this.toModel(data) as PensionPotModel | null;
+  }
+
+  async findPensionPots(): Promise<PensionPotModel[]> {
+    const { data, error } = await this.supabase
+      .from(this.tableName)
+      .select('*');
+    if (error) throw new Error(error.message);
+    return data.map((item: any) => this.toModel(item)) as PensionPotModel[];
   }
 }

@@ -11,7 +11,7 @@ export class GetPensionPotsUseCase {
    * Get all pension pots
    */
   async getPensionPots() {
-    const pots = await this.pensionPotRepository.findAll();
+    const pots = await this.pensionPotRepository.findPensionPots();
     return {
       data: pots,
     };

@@ -10,8 +10,8 @@ This guide will walk you through the steps to set up **Supabase** as your datast
 - [Creating a Supabase Project](#creating-a-supabase-project)
 - [Configuring Environment Variables](#configuring-environment-variables)
 - [Setting Up the Database](#setting-up-the-database)
-    - [Pension Pots Table](#pension-pots-table)
-    - [Searched Pensions Table](#searched-pensions-table)
+   - [Pension Pots Table](#pension-pots-table)
+   - [Searched Pensions Table](#searched-pensions-table)
 - [Inserting Initial Data](#inserting-initial-data)
 - [Running the API with Supabase](#running-the-api-with-supabase)
 - [Conclusion](#conclusion)
@@ -35,9 +35,9 @@ Before getting started, ensure you have the following:
 
 2. **Create a New Project:**
 
-    - Click on **New Project**.
-    - Select a name for your project and choose a region close to you.
-    - Click on **Create New Project**.
+   - Click on **New Project**.
+   - Select a name for your project and choose a region close to you.
+   - Click on **Create New Project**.
 
 3. **Set the Database Password:**
 
@@ -68,8 +68,8 @@ After setting up your Supabase project, you'll need to configure your environmen
    SUPABASE_KEY=your-supabase-api-key  # Replace with your Supabase API key
    ```
 
-    - `SUPABASE_URL`: Found in the **API** section of your Supabase project.
-    - `SUPABASE_KEY`: The **anon** public API key for your project.
+   - `SUPABASE_URL`: Found in the **API** section of your Supabase project.
+   - `SUPABASE_KEY`: The **anon** public API key for your project.
 
 ---
 
@@ -101,28 +101,26 @@ CREATE TABLE IF NOT EXISTS pension_pots (
 
 ### Searched Pensions Table
 
+The `searched_pensions` table now references the `pension_pots` table through a foreign key (`pension_pot_id`). This ensures that we avoid redundant pension pot data in the `searched_pensions` table.
+
 1. Click on **New Table** and enter the following schema for `searched_pensions`:
 
 ```sql
 CREATE TABLE IF NOT EXISTS searched_pensions (
     id UUID PRIMARY KEY,
-    potName VARCHAR(255),
+    pension_pot_id UUID REFERENCES pension_pots(id) ON DELETE CASCADE,  -- Foreign key to pension_pots
     policyNumber VARCHAR(255),
     annualFee FLOAT,
     status VARCHAR(50) NOT NULL,
     previousName VARCHAR(255),
     previousAddress VARCHAR(255),
-    annualInterestRate FLOAT,
-    defaultAnnualInterestRate FLOAT NOT NULL,
-    pensionProvider JSONB, -- To store provider name and value
-    amount DECIMAL NOT NULL,
-    employer VARCHAR(255),
-    foundOn TIMESTAMP,
     lastUpdatedAt TIMESTAMP NOT NULL,
-    monthlyPayment DECIMAL NOT NULL,
+    foundOn TIMESTAMP,
     isDraft BOOLEAN NOT NULL
 );
 ```
+
+- **pension_pot_id**: References the `pension_pots` table. This ensures that all the pension pot details are only stored in one place, and the searched pensions reference them.
 
 ---
 
@@ -141,16 +139,20 @@ VALUES
 ('c759b80a-558a-488d-aba9-f1ee9593020b', 'Microsoft', 0.02, 0.02, '{"name": null, "value": null}', 123868, 'Microsoft', '2024-05-23T13:42:22.780Z', 0, false),
 ('3e2bfea6-d7bb-4ef6-8dea-2a149b4ef24c', 'Pot 1', 0.035, 0.02, '{"name": null, "value": null}', 12345, null, '2024-05-23T13:42:38.354Z', 300, false),
 ('1bbb9dfc-eb62-4988-9fab-7e0a52844d8c', 'Pot 2', 0.02, 0.02, '{"name": null, "value": null}', 1200, null, '2024-05-23T13:43:12.606Z', 0, false),
-('d18083cf-4990-4248-a3e8-37140706a8d7', 'A company', 0.002, 2.00, '{"name": null, "value": null}', 40000, null, '2024-08-05T14:31:26.067Z', 200, false);
+('d18083cf-4990-4248-a3e8-37140706a8d7', 'A company', 0.002, 2.00, '{"name": null, "value": null}', 40000, null, '2024-08-05T14:31:26.067Z', 200, false),
+('0a4c2ed0-3b0c-4606-817e-e6f8d14dbfd2', 'Searched Pension', 0.02, 0.02, '{"name": null, "value": null}', 0, 'Homebase', '2022-05-21T17:32:03.376Z', 0, false),
+('4b6004d2-58f6-45c6-9a27-045b9571ae3e', 'Pension', 0.02, 0.02, '{"name": null, "value": null}', 40000, 'Telegraph', '2024-06-11T10:52:33.819Z', 0, false);
+
+
 ```
 
 ### Searched Pensions Data
 
 ```sql
-INSERT INTO searched_pensions (id, potName, policyNumber, annualFee, status, previousName, previousAddress, annualInterestRate, defaultAnnualInterestRate, pensionProvider, amount, employer, foundOn, lastUpdatedAt, monthlyPayment, isDraft)
+INSERT INTO searched_pensions (id, pension_pot_id, policyNumber, annualFee, status, previousName, previousAddress, foundOn, lastUpdatedAt, isDraft)
 VALUES
-('0a4c2ed0-3b0c-4606-817e-e6f8d14dbfd2', 'Searched Pension', NULL, NULL, 'TO_HUNT', NULL, '12 Something St', 0.02, 0.02, '{"name": null, "value": null}', 0, 'Homebase', '2020-06-11T10:52:33.819Z', '2022-05-21T17:32:03.376Z', 0, true),
-('4b6004d2-58f6-45c6-9a27-045b9571ae3e', 'Pension', NULL, NULL, 'FOUND', NULL, '12 Something St', 0.02, 0.02, '{"name": null, "value": null}', 40000, 'Telegraph', '2024-08-11T10:52:33.819Z', '2024-06-11T10:52:33.819Z', 0, false);
+   ('9f0b9d90-6a8e-4c23-b784-4bce4a5c3d7f', '0a4c2ed0-3b0c-4606-817e-e6f8d14dbfd2', NULL, NULL, 'TO_HUNT', NULL, '12 Something St', '2020-06-11T10:52:33.819Z', '2024-06-11T10:52:33.819Z', true),
+   ('3a1a354e-c1a5-4d4c-aeff-df3b3fe4d499', '4b6004d2-58f6-45c6-9a27-045b9571ae3e', NULL, NULL, 'FOUND', NULL, '12 Something St', '2024-08-11T10:52:33.819Z', '2024-06-11T10:52:33.819Z', false);
 ```
 
 ---
@@ -167,9 +169,7 @@ Once the tables are set up and the data is inserted, follow these steps to run t
    SUPABASE_KEY=your-supabase-api-key
    ```
 
-2
-
-. **Start the server** in development mode:
+2. **Start the server** in development mode:
 
    ```bash
    npm run start:dev
@@ -186,4 +186,3 @@ Once the tables are set up and the data is inserted, follow these steps to run t
 With Supabase set up as your database for the **Mintago Pension API**, you can now manage and query pension data using a scalable and real-time database. The API is ready to handle operations on pension pots and searched pensions with full support for Supabase.
 
 For additional Supabase features like real-time subscriptions, authentication, or advanced Postgres features, explore the [Supabase Documentation](https://supabase.com/docs).
-

@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ServiceInterface } from '../../../domain/adapters/service.interface';
+import { IServiceInterface } from '../../../domain/adapters/service.interface';
 
 export class HttpResponse {
   // static method to send success response
   static send<T = any, U = any>(
     message: string,
-    data?: ServiceInterface<T, U>,
+    data?: IServiceInterface<T, U>,
   ) {
     return {
       status: true,

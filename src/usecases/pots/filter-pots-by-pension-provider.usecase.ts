@@ -1,5 +1,4 @@
 import { IPensionPotRepository } from '../../domain/repositories/pension-pot-repository.interface';
-import { ISearchedPensionRepository } from '../../domain/repositories/searched-pension-repository.interface';
 import { ILogger } from '../../domain/logger/logger.interface';
 import { BadRequestException } from '@nestjs/common';
 import { IUseCaseResponse } from '../../domain/adapters/use-case-response.interface';
@@ -9,7 +8,6 @@ import { SearchedPensionModel } from '../../domain/models/searched-pension.model
 export class FilterPotsByPensionProviderUseCase {
   constructor(
     private readonly pensionPotRepository: IPensionPotRepository,
-    private readonly searchedPensionRepository: ISearchedPensionRepository,
     private readonly logger: ILogger,
   ) {}
 
@@ -21,13 +19,10 @@ export class FilterPotsByPensionProviderUseCase {
     provider: string,
   ): Promise<IUseCaseResponse<(PensionPotModel | SearchedPensionModel)[]>> {
     try {
-      const [pensionPots, searchedPensions] = await Promise.all([
-        this.pensionPotRepository.findByProvider(provider),
-        this.searchedPensionRepository.findByProvider(provider),
-      ]);
-
+      const pensionPots =
+        await this.pensionPotRepository.findByProvider(provider);
       return {
-        data: [...pensionPots, ...searchedPensions],
+        data: [...pensionPots],
       };
     } catch (e) {
       this.logger.error(

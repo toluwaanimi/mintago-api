@@ -1,11 +1,7 @@
 import { FilterPotsByPensionProviderUseCase } from '../filter-pots-by-pension-provider.usecase';
-import {
-  mockPensionPotRepository,
-  mockSearchedPensionRepository,
-} from '../../../infrastructure/common/tests/mock/repository.mock';
+import { mockPensionPotRepository } from '../../../infrastructure/common/tests/mock/repository.mock';
 import { mockLogger } from '../../../infrastructure/common/tests/mock/logger.mock';
 import { PensionPotModel } from '../../../domain/models/pension-pot.model';
-import { SearchedPensionModel } from '../../../domain/models/searched-pension.model';
 import { BadRequestException } from '@nestjs/common';
 
 describe('FilterPotsByPensionProviderUseCase', () => {
@@ -14,7 +10,6 @@ describe('FilterPotsByPensionProviderUseCase', () => {
   beforeEach(() => {
     filterPotsByPensionProviderUseCase = new FilterPotsByPensionProviderUseCase(
       mockPensionPotRepository,
-      mockSearchedPensionRepository,
       mockLogger,
     );
   });
@@ -35,30 +30,7 @@ describe('FilterPotsByPensionProviderUseCase', () => {
       },
     ];
 
-    const mockSearchedPensions: SearchedPensionModel[] = [
-      {
-        id: '2',
-        potName: 'Searched Pot 1',
-        amount: 5000,
-        annualInterestRate: 3,
-        defaultAnnualInterestRate: 3,
-        employer: 'Employer 2',
-        lastUpdatedAt: '2024-01-01T00:00:00.000Z',
-        pensionProvider: { name: 'Provider 1', value: 'PROVIDER_1' },
-        status: 'FOUND',
-        foundOn: '2024-01-01T00:00:00.000Z',
-        isDraft: false,
-        previousName: null,
-        previousAddress: 'Some Address',
-        policyNumber: '',
-        annualFee: 0,
-      },
-    ];
-
     mockPensionPotRepository.findByProvider.mockResolvedValue(mockPensionPots);
-    mockSearchedPensionRepository.findByProvider.mockResolvedValue(
-      mockSearchedPensions,
-    );
 
     const result =
       await filterPotsByPensionProviderUseCase.filterPotsByPensionProvider(
@@ -68,15 +40,12 @@ describe('FilterPotsByPensionProviderUseCase', () => {
     expect(mockPensionPotRepository.findByProvider).toHaveBeenCalledWith(
       'Provider 1',
     );
-    expect(mockSearchedPensionRepository.findByProvider).toHaveBeenCalledWith(
-      'Provider 1',
-    );
-    expect(result.data).toEqual([...mockPensionPots, ...mockSearchedPensions]);
+
+    expect(result.data).toEqual([...mockPensionPots]);
   });
 
   it('should return an empty array if no pots are found for the given provider', async () => {
     mockPensionPotRepository.findByProvider.mockResolvedValue([]);
-    mockSearchedPensionRepository.findByProvider.mockResolvedValue([]);
 
     const result =
       await filterPotsByPensionProviderUseCase.filterPotsByPensionProvider(
@@ -86,9 +55,7 @@ describe('FilterPotsByPensionProviderUseCase', () => {
     expect(mockPensionPotRepository.findByProvider).toHaveBeenCalledWith(
       'Nonexistent Provider',
     );
-    expect(mockSearchedPensionRepository.findByProvider).toHaveBeenCalledWith(
-      'Nonexistent Provider',
-    );
+
     expect(result.data).toEqual([]);
   });
 

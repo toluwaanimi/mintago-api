@@ -5,12 +5,23 @@ export abstract class BaseSupabaseRepository<T> implements IBaseRepository<T> {
   constructor(
     protected supabase: SupabaseClient,
     protected tableName: string,
+    protected foreignTableNames: string[] = [],
   ) {}
+
+  private buildSelectQuery() {
+    if (this.foreignTableNames.length === 0) {
+      return '*';
+    }
+    const foreignTableSelects = this.foreignTableNames
+      .map((table) => `${table}(*)`)
+      .join(', ');
+    return `*, ${foreignTableSelects}`;
+  }
 
   async findAll(): Promise<T[]> {
     const { data, error } = await this.supabase
       .from(this.tableName)
-      .select('*');
+      .select(this.buildSelectQuery());
     if (error) throw new Error(error.message);
     return data as T[];
   }
@@ -18,12 +29,12 @@ export abstract class BaseSupabaseRepository<T> implements IBaseRepository<T> {
   async findById(id: string): Promise<T | null> {
     const { data, error } = await this.supabase
       .from(this.tableName)
-      .select('*')
+      .select(this.buildSelectQuery())
       .eq('id', id)
       .limit(1);
     if (error) throw new Error(error.message);
 
-    if (!error) {
+    if (data && data.length > 0) {
       return data[0] as T;
     }
     return null;
@@ -38,7 +49,7 @@ export abstract class BaseSupabaseRepository<T> implements IBaseRepository<T> {
     return data as T;
   }
 
-  async update(id: string, updatedItem: T): Promise<T> {
+  async update(id: string, updatedItem: Partial<T>): Promise<T> {
     const { data, error } = await this.supabase
       .from(this.tableName)
       .update(updatedItem)

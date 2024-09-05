@@ -2,6 +2,7 @@ import { IPensionPotRepository } from '../../../../domain/repositories/pension-p
 import { ISearchedPensionRepository } from '../../../../domain/repositories/searched-pension-repository.interface';
 
 export const mockPensionPotRepository: jest.Mocked<IPensionPotRepository> = {
+  findPensionPots: jest.fn(),
   create: jest.fn(),
   delete: jest.fn(),
   findByAmountOver: jest.fn(),
@@ -16,6 +17,7 @@ export const mockPensionPotRepository: jest.Mocked<IPensionPotRepository> = {
 
 export const mockSearchedPensionRepository: jest.Mocked<ISearchedPensionRepository> =
   {
+    findSearchPension: jest.fn(),
     findByStatus: jest.fn(),
     findByAmountOver: jest.fn(),
     findByAmountUnder: jest.fn(),
